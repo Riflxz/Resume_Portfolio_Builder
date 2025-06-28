@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+
+{% block title %}Portfolio Preview - Resume Portfolio Builder{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Preview Header -->
+    <div class="preview-header bg-primary text-white py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h2 class="mb-0"><i class="fas fa-eye me-2"></i>Portfolio Preview</h2>
+                    <p class="mb-0 opacity-75">Review your portfolio before exporting</p>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-light me-2">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </a>
+                    <a href="{{ url_for('export_portfolio') }}" class="btn btn-success">
+                        <i class="fas fa-download me-1"></i>Export ZIP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Preview -->
+    <div class="portfolio-preview">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="portfolio-container">
+                        <header class="portfolio-header">
+                            <div class="profile-section">
+                                {% if data.photo %}
+                                    <img src="{{ url_for('static', filename='uploads/' + data.photo) }}" alt="Profile Photo" class="profile-photo">
+                                {% else %}
+                                    <div class="profile-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                {% endif %}
+                                <h1 class="portfolio-name">{{ data.name }}</h1>
+                                <h2 class="portfolio-job-title">{{ data.job_title }}</h2>
+                                {% if data.description %}
+                                    <p class="portfolio-description">{{ data.description }}</p>
+                                {% endif %}
+                            </div>
+                        </header>
+
+                        <main class="portfolio-content">
+                            {% if data.education %}
+                            <section class="portfolio-section">
+                                <h3 class="portfolio-section-title">
+                                    <i class="fas fa-graduation-cap"></i> Education
+                                </h3>
+                                <div class="portfolio-section-content">
+                                    {% for edu in data.education %}
+                                    <div class="portfolio-item">
+                                        <h4 class="portfolio-item-title">{{ edu.degree }}</h4>
+                                        <p class="portfolio-item-subtitle">{{ edu.school }}</p>
+                                        <p class="portfolio-item-date">{{ edu.year }}</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                            {% endif %}
+
+                            {% if data.experience %}
+                            <section class="portfolio-section">
+                                <h3 class="portfolio-section-title">
+                                    <i class="fas fa-briefcase"></i> Experience
+                                </h3>
+                                <div class="portfolio-section-content">
+                                    {% for exp in data.experience %}
+                                    <div class="portfolio-item">
+                                        <h4 class="portfolio-item-title">{{ exp.position }}</h4>
+                                        <p class="portfolio-item-subtitle">{{ exp.company }}</p>
+                                        <p class="portfolio-item-date">{{ exp.period }}</p>
+                                        {% if exp.description %}
+                                            <p class="portfolio-item-description">{{ exp.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                            {% endif %}
+
+                            {% if data.skills %}
+                            <section class="portfolio-section">
+                                <h3 class="portfolio-section-title">
+                                    <i class="fas fa-cogs"></i> Skills
+                                </h3>
+                                <div class="portfolio-section-content">
+                                    <div class="portfolio-skills-grid">
+                                        {% for skill in data.skills %}
+                                            <span class="portfolio-skill-tag">{{ skill }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </section>
+                            {% endif %}
+
+                            {% if data.social %}
+                            <section class="portfolio-section">
+                                <h3 class="portfolio-section-title">
+                                    <i class="fas fa-link"></i> Contact
+                                </h3>
+                                <div class="portfolio-section-content">
+                                    <div class="portfolio-social-links">
+                                        {% for platform, url in data.social.items() %}
+                                            {% set icon_map = {
+                                                'github': 'fab fa-github',
+                                                'linkedin': 'fab fa-linkedin',
+                                                'twitter': 'fab fa-twitter',
+                                                'website': 'fas fa-globe',
+                                                'email': 'fas fa-envelope'
+                                            } %}
+                                            <a href="{% if platform == 'email' %}mailto:{{ url }}{% elif url.startswith('http') %}{{ url }}{% else %}https://{{ url }}{% endif %}" 
+                                               class="portfolio-social-link" target="_blank">
+                                                <i class="{{ icon_map.get(platform, 'fas fa-link') }}"></i>
+                                                {{ url }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </section>
+                            {% endif %}
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Info Modal -->
+<div class="modal fade" id="exportInfoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>Export Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Your portfolio will be exported as a ZIP file containing:</p>
+                <ul>
+                    <li><strong>index.html</strong> - Your complete portfolio page</li>
+                    <li><strong>style.css</strong> - All styling and responsive design</li>
+                    <li><strong>profile_photo.jpg</strong> - Your profile photo (if uploaded)</li>
+                </ul>
+                <p class="mb-0">The exported files are ready to deploy on any web hosting service like Netlify, Vercel, GitHub Pages, or any web server.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{{ url_for('export_portfolio') }}" class="btn btn-success">
+                    <i class="fas fa-download me-1"></i>Download ZIP
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Show export info modal on first visit
+document.addEventListener('DOMContentLoaded', function() {
+    if (!sessionStorage.getItem('exportInfoShown')) {
+        setTimeout(() => {
+            const modal = new bootstrap.Modal(document.getElementById('exportInfoModal'));
+            modal.show();
+            sessionStorage.setItem('exportInfoShown', 'true');
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}
