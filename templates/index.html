@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Portfolio - Resume Portfolio Builder{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 fw-bold mb-3">Build Your Professional Portfolio</h1>
+                <p class="lead mb-4">Create a modern, responsive portfolio in minutes. Fill out the form below and export your portfolio as a ready-to-deploy package.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0"><i class="fas fa-edit me-2"></i>Portfolio Information</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('submit_form') }}" enctype="multipart/form-data" id="portfolioForm">
+                        
+                        <!-- Basic Information -->
+                        <div class="section-card mb-4">
+                            <h4 class="section-title"><i class="fas fa-user me-2"></i>Basic Information</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="job_title" class="form-label">Job Title *</label>
+                                    <input type="text" class="form-control" id="job_title" name="job_title" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">About You</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Write a brief description about yourself..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="photo" class="form-label">Profile Photo</label>
+                                <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                                <div class="form-text">Upload a professional photo (PNG, JPG, JPEG, GIF - Max 16MB)</div>
+                            </div>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="section-card mb-4">
+                            <h4 class="section-title"><i class="fas fa-graduation-cap me-2"></i>Education</h4>
+                            <div id="education-container">
+                                <div class="education-item">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">School/University</label>
+                                            <input type="text" class="form-control" name="education_school" placeholder="University Name">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Degree</label>
+                                            <input type="text" class="form-control" name="education_degree" placeholder="Bachelor of Science">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Year</label>
+                                            <input type="text" class="form-control" name="education_year" placeholder="2020-2024">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addEducation()">
+                                <i class="fas fa-plus me-1"></i>Add Another Education
+                            </button>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="section-card mb-4">
+                            <h4 class="section-title"><i class="fas fa-briefcase me-2"></i>Experience</h4>
+                            <div id="experience-container">
+                                <div class="experience-item">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Company</label>
+                                            <input type="text" class="form-control" name="experience_company" placeholder="Company Name">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Position</label>
+                                            <input type="text" class="form-control" name="experience_position" placeholder="Job Title">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Period</label>
+                                            <input type="text" class="form-control" name="experience_period" placeholder="Jan 2020 - Present">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-control" name="experience_description" rows="2" placeholder="Describe your role and achievements..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addExperience()">
+                                <i class="fas fa-plus me-1"></i>Add Another Experience
+                            </button>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="section-card mb-4">
+                            <h4 class="section-title"><i class="fas fa-cogs me-2"></i>Skills</h4>
+                            <div class="mb-3">
+                                <label for="skills-input" class="form-label">Add Skills</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="skills-input" placeholder="e.g., Python, JavaScript, React">
+                                    <button type="button" class="btn btn-outline-primary" onclick="addSkill()">
+                                        <i class="fas fa-plus"></i> Add
+                                    </button>
+                                </div>
+                                <div class="form-text">Type a skill and click Add, or press Enter</div>
+                            </div>
+                            <div id="skills-container" class="skills-display"></div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="section-card mb-4">
+                            <h4 class="section-title"><i class="fas fa-link me-2"></i>Social Media & Contact</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="social_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="social_email" name="social_email" placeholder="your@email.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="social_website" class="form-label">Website</label>
+                                    <input type="url" class="form-control" id="social_website" name="social_website" placeholder="https://yourwebsite.com">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="social_linkedin" class="form-label">LinkedIn</label>
+                                    <input type="text" class="form-control" id="social_linkedin" name="social_linkedin" placeholder="linkedin.com/in/username">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="social_github" class="form-label">GitHub</label>
+                                    <input type="text" class="form-control" id="social_github" name="social_github" placeholder="github.com/username">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="social_twitter" class="form-label">Twitter</label>
+                                    <input type="text" class="form-control" id="social_twitter" name="social_twitter" placeholder="twitter.com/username">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-eye me-2"></i>Preview Portfolio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
